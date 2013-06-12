@@ -4,15 +4,15 @@ import java.util.List;
 
 import org.holoeverywhere.app.ListFragment;
 
-import com.braisgabin.dhtbalanced.loaders.FingerTableLoader;
-
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.util.Pair;
 import android.view.View;
+import android.widget.ArrayAdapter;
 
-public class FingerFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<Pair<String, String>>> {
+import com.braisgabin.dhtbalanced.loaders.FingerTableLoader;
+
+public class FingerFragment extends ListFragment implements LoaderManager.LoaderCallbacks<List<String>> {
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -27,16 +27,16 @@ public class FingerFragment extends ListFragment implements LoaderManager.Loader
 	}
 
 	@Override
-	public Loader<List<Pair<String, String>>> onCreateLoader(int arg0, Bundle arg1) {
+	public Loader<List<String>> onCreateLoader(int arg0, Bundle arg1) {
 		return new FingerTableLoader(getActivity());
 	}
 
 	@Override
-	public void onLoadFinished(Loader<List<Pair<String, String>>> arg0, List<Pair<String, String>> arg1) {
-		setListAdapter(new ListPairAdaper(getActivity(), arg1));
+	public void onLoadFinished(Loader<List<String>> arg0, List<String> arg1) {
+		setListAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, arg1));
 	}
 
 	@Override
-	public void onLoaderReset(Loader<List<Pair<String, String>>> arg0) {
+	public void onLoaderReset(Loader<List<String>> arg0) {
 	}
 }
