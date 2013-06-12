@@ -2,7 +2,6 @@ package com.braisgabin.dhtbalanced.fragments;
 
 import java.util.List;
 
-import org.holoeverywhere.ArrayAdapter;
 import org.holoeverywhere.LayoutInflater;
 import org.holoeverywhere.widget.TextView;
 
@@ -11,7 +10,7 @@ import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class ListPairAdaper extends ArrayAdapter<Pair<String, String>> {
+public class ListPairAdaper extends org.holoeverywhere.widget.ArrayAdapter<Pair<String, String>> {
 
 	public ListPairAdaper(Context context, List<Pair<String, String>> objects) {
 		super(context, 0, objects);
