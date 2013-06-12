@@ -7,9 +7,13 @@ import java.util.Enumeration;
 
 import org.apache.http.conn.util.InetAddressUtils;
 import org.holoeverywhere.app.Activity;
+import org.holoeverywhere.app.AlertDialog;
+import org.holoeverywhere.widget.EditText;
 
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
@@ -20,6 +24,7 @@ import android.widget.TabHost;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.braisgabin.dhtbalanced.fragments.FingerFragment;
+import com.braisgabin.dhtbalanced.fragments.LogFragment;
 import com.braisgabin.dhtbalanced.thread.ClientThread;
 import com.braisgabin.dhtbalanced.utils.TabManager;
 
@@ -44,7 +49,7 @@ public class MainActivity extends Activity {
 		mTabManager = new TabManager(this, mTabHost, R.id.realtabcontent);
 
 		mTabManager.addTab(mTabHost.newTabSpec("map").setIndicator("Finger table"), FingerFragment.class, null);
-		mTabManager.addTab(mTabHost.newTabSpec("all").setIndicator("Log"), FingerFragment.class, null);
+		mTabManager.addTab(mTabHost.newTabSpec("all").setIndicator("Log"), LogFragment.class, null);
 		mTabManager.addTab(mTabHost.newTabSpec("account").setIndicator("Data"), FingerFragment.class, null);
 
 		if (savedInstanceState != null) {
@@ -85,8 +90,19 @@ public class MainActivity extends Activity {
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
 
-		Thread fst = new Thread(new ClientThread("192.168.2.134"));
-		fst.start();
+		final EditText input = new EditText(this);
+
+		new AlertDialog.Builder(this).setTitle("Add IP")
+				.setView(input)
+				.setPositiveButton(android.R.string.ok, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Thread fst = new Thread(new ClientThread(input.getText().toString()));
+						fst.start();
+					}
+				})
+				.show();
 
 		return true;
 	}

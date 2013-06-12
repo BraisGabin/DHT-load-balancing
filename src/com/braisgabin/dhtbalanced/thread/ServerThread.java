@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import android.util.Log;
+import com.braisgabin.dhtbalanced.App;
 
 public class ServerThread extends Thread {
 
@@ -23,7 +23,7 @@ public class ServerThread extends Thread {
 					BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
 					String line = null;
 					while ((line = in.readLine()) != null && !stop) {
-						Log.d("ServerActivity", line);
+						((App) App.getLastInstance()).getLog().add(line);
 					}
 					in.close();
 				} catch (Exception e) {
