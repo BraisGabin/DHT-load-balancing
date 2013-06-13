@@ -8,6 +8,7 @@ import android.os.Binder;
 import android.os.IBinder;
 
 import com.braisgabin.dhtbalanced.thread.ServerThread;
+import com.braisgabin.dhtbalanced.utils.Util;
 
 public class SocketService extends Service {
 
@@ -28,7 +29,7 @@ public class SocketService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		serverThread = new ServerThread();
+		serverThread = new ServerThread(Util.getLocalIpAddress());
 		serverThread.start();
 	}
 

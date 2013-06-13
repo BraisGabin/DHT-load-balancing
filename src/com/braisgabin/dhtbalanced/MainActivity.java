@@ -1,11 +1,5 @@
 package com.braisgabin.dhtbalanced;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
-
-import org.apache.http.conn.util.InetAddressUtils;
 import org.holoeverywhere.app.Activity;
 import org.holoeverywhere.app.AlertDialog;
 import org.holoeverywhere.widget.EditText;
@@ -18,15 +12,15 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 import android.widget.TabHost;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.braisgabin.dhtbalanced.fragments.FingerFragment;
 import com.braisgabin.dhtbalanced.fragments.LogFragment;
-import com.braisgabin.dhtbalanced.thread.ClientThread;
+import com.braisgabin.dhtbalanced.thread.ConnectThread;
 import com.braisgabin.dhtbalanced.utils.TabManager;
+import com.braisgabin.dhtbalanced.utils.Util;
 
 public class MainActivity extends Activity {
 	private TabHost mTabHost;
@@ -56,10 +50,11 @@ public class MainActivity extends Activity {
 			mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
 		}
 
-		String ip = getLocalIpAddress();
+		String ip = Util.getLocalIpAddress();
 		getSupportActionBar().setTitle(ip);
-		getSupportActionBar().setSubtitle((0x000000ff & ip.hashCode()) + "");
-		System.out.println(getLocalIpAddress());
+		getSupportActionBar().setSubtitle(Util.getId(ip) + "");
+
+		((App) App.getLastInstance()).fillFinguerTable(ip);
 
 		bindService(new Intent(this, SocketService.class), mConnection, Context.BIND_AUTO_CREATE);
 	}
@@ -98,7 +93,7 @@ public class MainActivity extends Activity {
 
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						Thread fst = new Thread(new ClientThread(input.getText().toString()));
+						Thread fst = new Thread(new ConnectThread(Util.getLocalIpAddress(), input.getText().toString()));
 						fst.start();
 					}
 				})
@@ -111,25 +106,5 @@ public class MainActivity extends Activity {
 	protected void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putString("tab", mTabHost.getCurrentTabTag());
-	}
-
-	private String getLocalIpAddress() {
-		try {
-			for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
-				NetworkInterface intf = en.nextElement();
-				for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
-					InetAddress inetAddress = enumIpAddr.nextElement();
-					if (!inetAddress.isLoopbackAddress()) {
-						String sAddr = inetAddress.getHostAddress().toUpperCase();
-						boolean isIPv4 = InetAddressUtils.isIPv4Address(sAddr);
-						if (isIPv4)
-							return sAddr;
-					}
-				}
-			}
-		} catch (SocketException ex) {
-			Log.e("ServerActivity", ex.toString());
-		}
-		return null;
 	}
 }

@@ -19,4 +19,10 @@ public class MyArrayList<T> extends ArrayList<T> {
 		}
 		return add;
 	}
+
+	public T set(int index, T object) {
+		T set = super.set(index, object);
+		ob.update(null, null);
+		return set;
+	};
 }

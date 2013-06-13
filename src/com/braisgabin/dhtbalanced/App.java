@@ -32,4 +32,11 @@ public class App extends Application {
 		return data;
 	}
 
+	public void fillFinguerTable(String ip) {
+		MyArrayList<String> fingerTable = getFingerTable();
+		fingerTable.clear();
+		for (int i = 0; i < 8; i++) {
+			fingerTable.add(ip);
+		}
+	}
 }
