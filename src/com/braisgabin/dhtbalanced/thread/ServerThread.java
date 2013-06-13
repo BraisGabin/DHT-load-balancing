@@ -90,20 +90,16 @@ public class ServerThread extends Thread {
 			int id = Util.getId(fingerTable.get(i));
 			int desiredId = (myId + (1 << i)) % (1 << 8);
 			if (desiredId <= remoteId) {
-				if (desiredId <= id) {
-					if (remoteId < id) {
-						fingerTable.set(i, remoteIp);
-					}
-				} else {
+				if (remoteId <= id || id < desiredId) {
 					fingerTable.set(i, remoteIp);
+				} else {
+					// No hacer nada
 				}
 			} else {
-				if (desiredId <= id) {
-					// No se hace nada
+				if (remoteId < id && id < desiredId) {
+					fingerTable.set(i, remoteIp);
 				} else {
-					if (remoteId < id) {
-						fingerTable.set(i, remoteIp);
-					}
+					// No hacer nada
 				}
 			}
 		}
