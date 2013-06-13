@@ -43,6 +43,11 @@ public class ServerThread extends Thread {
 							String[] split = line.split(" ");
 							String adress = getAdress(Integer.parseInt(split[1]), remoteIp);
 							out.println(adress);
+						} else if (line.startsWith("find")) {
+							// TODO implementar. Buscar si lo tienes tu. Si no lo tienes mirar si eras el responsable (lo eres si tu siguiente no puede serlo)
+							// en tal caso devolver -- si no devolver el mejor salto para llegar.
+						} else if (line.startsWith("add")) {
+							// A–adir
 						}
 					}
 					in.close();

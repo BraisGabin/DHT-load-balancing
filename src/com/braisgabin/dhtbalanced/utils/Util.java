@@ -1,9 +1,13 @@
 package com.braisgabin.dhtbalanced.utils;
 
+import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Enumeration;
+import java.util.List;
 
 import org.apache.http.conn.util.InetAddressUtils;
 
@@ -57,5 +61,31 @@ public class Util {
 			value = succesor1;
 		}
 		return value;
+	}
+
+	public static int getId2(String s) {
+		MessageDigest m = null;
+
+		try {
+			m = MessageDigest.getInstance("MD5");
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+
+		m.update(s.getBytes(), 0, s.length());
+		return (0x000000ff & new BigInteger(1, m.digest()).intValue());
+	}
+
+	public static String nextStep(List<String> finguerTable, int myId, int hash) {
+		if (myId > hash) {
+			hash += 256;
+		}
+		int i;
+		for (i = 0; i < 8; i++) {
+			if (finguer(myId, i) > hash) {
+				break;
+			}
+		}
+		return finguerTable.get(i - 1);
 	}
 }

@@ -19,6 +19,7 @@ import com.actionbarsherlock.view.MenuItem;
 import com.braisgabin.dhtbalanced.fragments.FingerFragment;
 import com.braisgabin.dhtbalanced.fragments.LogFragment;
 import com.braisgabin.dhtbalanced.thread.ConnectThread;
+import com.braisgabin.dhtbalanced.thread.SearchThread;
 import com.braisgabin.dhtbalanced.utils.TabManager;
 import com.braisgabin.dhtbalanced.utils.Util;
 
@@ -84,7 +85,21 @@ public class MainActivity extends Activity {
 
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
+		switch (featureId) {
+			case R.id.action_join:
+				join();
+			break;
+			case R.id.action_add:
+				addItem();
+			break;
+			case R.id.action_search:
+				searchItem();
+			break;
+		}
+		return true;
+	}
 
+	private void join() {
 		final EditText input = new EditText(this);
 
 		new AlertDialog.Builder(this).setTitle("Add IP")
@@ -98,8 +113,28 @@ public class MainActivity extends Activity {
 					}
 				})
 				.show();
+	}
 
-		return true;
+	private void addItem() {
+		addItem();
+	}
+
+	private void searchItem() {
+		final EditText input = new EditText(this);
+
+		new AlertDialog.Builder(this).setTitle("Add IP")
+				.setView(input)
+				.setPositiveButton(android.R.string.ok, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Thread fst = new Thread(new SearchThread(Util.getLocalIpAddress(), input.getText().toString(), Util.getId(input.getText().toString())));
+						fst.start();
+						Thread fst2 = new Thread(new SearchThread(Util.getLocalIpAddress(), input.getText().toString(), Util.getId2(input.getText().toString())));
+						fst2.start();
+					}
+				})
+				.show();
 	}
 
 	@Override
