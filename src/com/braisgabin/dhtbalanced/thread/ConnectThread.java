@@ -57,28 +57,37 @@ public class ConnectThread implements Runnable {
 		socket.close();
 
 		final int adressId = Util.getId(adress);
-		final String value;
-		if (adressId == id) {
-			value = adress;
-		} else if (adressId == myId) {
-			if (id < myId) {
-				if (requestId > myId || requestId < id) {
-					value = myIp;
-				} else {
-					value = ip;
-				}
+		String value;
+
+		if (adressId == myId) {
+			// Si el otro dice que soy yo... pues no te lo terminas de creer, hay que comprobarlo!
+			value = Util.bestSucessor(id, myIp, ip);
+		} else if (id > myId) {
+			// Este es el caso normal, le pido a un sucesor mayor sin contar con el modulo 2^8
+			if (id <= adressId) {
+				// me dan una IP superior a la esperada, por lo tanto es el sucesor.
+				value = adress;
+			} else if (adressId <= myId) {
+				// la ip sigue siendo superior pero hay que controlar el modulo 2^8.
+				value = adress;
 			} else {
-				if (requestId > id || requestId < myId) {
-					value = ip;
-				} else {
-					value = myIp;
-				}
+				// la ip se encuentra entre la ip del que pregunta y la del que busca, por lo que seguimos preguntando al nuevo.
+				value = lookup(id, adress);
 			}
-		} else if (adressId == requestId) {
-			value = ip;
 		} else {
-			value = lookup(id, adress);
+			// Este es el caso "raro". Pido a uno con id menor que el mio por cuesti—n del modulo 2^8
+			if (adressId > myId) {
+				// Aœn no he conseguido pasar la frontera del modulo por lo que sigo buscando
+				value = lookup(id, adress);
+			} else if (adressId < id) {
+				// Sigo sin pasarme, sigo buscando
+				value = lookup(id, adress);
+			} else {
+				// estoy en la zona buena, al cielo con ella
+				value = adress;
+			}
 		}
+
 		return value;
 	}
 }

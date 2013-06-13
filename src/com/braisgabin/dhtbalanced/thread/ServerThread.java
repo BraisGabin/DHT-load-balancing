@@ -41,7 +41,7 @@ public class ServerThread extends Thread {
 						((App) App.getLastInstance()).getLog().add("< " + client.getInetAddress().getHostAddress() + ": " + line);
 						if (line.startsWith("lookup")) {
 							String[] split = line.split(" ");
-							String adress = getAdress(Integer.parseInt(split[1]));
+							String adress = getAdress(Integer.parseInt(split[1]), remoteIp);
 							out.println(adress);
 						}
 					}
@@ -58,50 +58,41 @@ public class ServerThread extends Thread {
 		}
 	}
 
-	private String getAdress(int lookupId) {
-		int index = -1;
-		int bestId = myId;
-		for (int i = 0; i < 8; i++) {
-			int id = (myId + (1 << i)) % (1 << 8);
-			if (bestId < lookupId) {
-				if (lookupId >= id && bestId < id) {
-					index = i;
-					bestId = id;
+	private String getAdress(int lookupId, String remoteIp) {
+		int i;
+		int remoteId = Util.getId(remoteIp);
+		for (i = 0; i < 8; i++) {
+			int finguer = Util.finguer(myId, i);
+			if (remoteId < myId) {
+				if (lookupId > myId) {
+					if (finguer > lookupId) {
+						break;
+					}
 				} else {
-					break;
+					if (finguer < myId && finguer > lookupId) {
+						break;
+					}
 				}
 			} else {
-				if (id >= bestId || id < lookupId) {
+				if (lookupId > remoteId) {
 					break;
-				} else {
-					index = i;
-					bestId = id;
+				} else if (lookupId <= myId) {
+					break;
+				} else if (finguer > lookupId) {
+					break;
 				}
 			}
 		}
-		return index == -1 ? myIp : ((App) App.getLastInstance()).getFingerTable().get(index);
+		i--;
+		return i == -1 ? myIp : ((App) App.getLastInstance()).getFingerTable().get(i);
 	}
 
 	private void refreshFingerTable(String remoteIp) {
 		MyArrayList<String> fingerTable = ((App) App.getLastInstance()).getFingerTable();
-		int remoteId = Util.getId(remoteIp);
 
 		for (int i = 0; i < 8; i++) {
-			int id = Util.getId(fingerTable.get(i));
-			int desiredId = (myId + (1 << i)) % (1 << 8);
-			if (desiredId <= remoteId) {
-				if (remoteId <= id || id < desiredId) {
-					fingerTable.set(i, remoteIp);
-				} else {
-					// No hacer nada
-				}
-			} else {
-				if (remoteId < id && id < desiredId) {
-					fingerTable.set(i, remoteIp);
-				} else {
-					// No hacer nada
-				}
-			}
+			String ip = fingerTable.get(i);
+			fingerTable.set(i, Util.bestSucessor(Util.finguer(myId, i), ip, remoteIp));
 		}
 	}
 

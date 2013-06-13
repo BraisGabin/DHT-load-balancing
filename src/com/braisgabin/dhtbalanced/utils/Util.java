@@ -42,4 +42,20 @@ public class Util {
 	public static int finguer(int base, int i) {
 		return (base + (1 << i)) % (1 << 8);
 	}
+
+	public static String bestSucessor(int id, String succesor1, String succesor2) {
+		final String value;
+		int s1 = Util.getId(succesor1);
+		int s2 = Util.getId(succesor2);
+		if (s1 > s2) {
+			value = bestSucessor(id, succesor2, succesor1);
+		} else if (id <= s1) {
+			value = succesor1;
+		} else if (id <= s2) {
+			value = succesor2;
+		} else {
+			value = succesor1;
+		}
+		return value;
+	}
 }
