@@ -1,5 +1,6 @@
 package com.braisgabin.dhtbalanced.utils;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -35,8 +36,17 @@ public class Util {
 		return null;
 	}
 
-	public static int getId(String ip) {
-		return (0x000000ff & ip.hashCode());
+	public static int getId(String s) {
+		MessageDigest m = null;
+
+		try {
+			m = MessageDigest.getInstance("SHA-1");
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+
+		m.update(s.getBytes(), 0, s.length());
+		return (0x000000ff & new BigInteger(1, m.digest()).intValue());
 	}
 
 	public static int log2Floor(int i) {
