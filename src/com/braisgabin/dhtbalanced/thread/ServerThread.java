@@ -47,10 +47,13 @@ public class ServerThread extends Thread {
 							String[] split = line.split(" ");
 							String adress = find(Integer.parseInt(split[1]), split[2], remoteIp);
 							out.println(adress);
-							// TODO implementar. Buscar si lo tienes tu. Si no lo tienes mirar si eras el responsable (lo eres si tu siguiente no puede serlo)
-							// en tal caso devolver -- si no devolver el mejor salto para llegar.
-						} else if (line.startsWith("add")) {
-							// A–adir
+						} else if (line.startsWith("load")) {
+							String[] split = line.split(" ");
+							String load = load(Integer.parseInt(split[1]), remoteIp);
+							out.println(load);
+						} else if (line.startsWith("insert")) {
+							String[] split = line.split(" ");
+							((App) App.getLastInstance()).getData().put(split[1], split[2]);
 						}
 					}
 					in.close();
@@ -64,6 +67,25 @@ public class ServerThread extends Thread {
 			e.printStackTrace();
 			((App) App.getLastInstance()).getLog().add(e.getMessage());
 		}
+	}
+
+	private String load(int id, String remoteIp) {
+		int remoteId = Util.getId(remoteIp);
+		String value;
+		if (remoteId < myId) {
+			if (id <= myId) {
+				value = "+" + ((App) App.getLastInstance()).getData().size();
+			} else {
+				value = Util.nextStep(((App) App.getLastInstance()).getFingerTable(), myId, id);
+			}
+		} else {
+			if (id <= myId || id > remoteId) {
+				value = "+" + ((App) App.getLastInstance()).getData().size();
+			} else {
+				value = Util.nextStep(((App) App.getLastInstance()).getFingerTable(), myId, id);
+			}
+		}
+		return value;
 	}
 
 	private String find(int id, String key, String remoteIp) {

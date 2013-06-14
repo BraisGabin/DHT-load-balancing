@@ -16,9 +16,11 @@ import android.widget.TabHost;
 
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.braisgabin.dhtbalanced.fragments.DataFragment;
 import com.braisgabin.dhtbalanced.fragments.FingerFragment;
 import com.braisgabin.dhtbalanced.fragments.LogFragment;
 import com.braisgabin.dhtbalanced.thread.ConnectThread;
+import com.braisgabin.dhtbalanced.thread.InsertThread;
 import com.braisgabin.dhtbalanced.thread.SearchThread;
 import com.braisgabin.dhtbalanced.utils.TabManager;
 import com.braisgabin.dhtbalanced.utils.Util;
@@ -45,7 +47,7 @@ public class MainActivity extends Activity {
 
 		mTabManager.addTab(mTabHost.newTabSpec("map").setIndicator("Finger table"), FingerFragment.class, null);
 		mTabManager.addTab(mTabHost.newTabSpec("all").setIndicator("Log"), LogFragment.class, null);
-		mTabManager.addTab(mTabHost.newTabSpec("account").setIndicator("Data"), FingerFragment.class, null);
+		mTabManager.addTab(mTabHost.newTabSpec("account").setIndicator("Data"), DataFragment.class, null);
 
 		if (savedInstanceState != null) {
 			mTabHost.setCurrentTabByTag(savedInstanceState.getString("tab"));
@@ -116,7 +118,30 @@ public class MainActivity extends Activity {
 	}
 
 	private void addItem() {
-		addItem();
+		final EditText input = new EditText(this);
+
+		new AlertDialog.Builder(this).setTitle("Add Key")
+				.setView(input)
+				.setPositiveButton(android.R.string.ok, new OnClickListener() {
+
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						final EditText input2 = new EditText(MainActivity.this);
+
+						new AlertDialog.Builder(MainActivity.this).setTitle("Add Value")
+								.setView(input2)
+								.setPositiveButton(android.R.string.ok, new OnClickListener() {
+
+									@Override
+									public void onClick(DialogInterface dialog, int which) {
+										Thread fst = new Thread(new InsertThread(Util.getLocalIpAddress(), input.getText().toString(), input2.getText().toString()));
+										fst.start();
+									}
+								})
+								.show();
+					}
+				})
+				.show();
 	}
 
 	private void searchItem() {
