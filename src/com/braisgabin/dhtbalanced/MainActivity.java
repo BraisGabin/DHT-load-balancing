@@ -85,7 +85,7 @@ public class MainActivity extends Activity {
 
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		switch (featureId) {
+		switch (item.getItemId()) {
 			case R.id.action_join:
 				join();
 			break;
@@ -122,7 +122,7 @@ public class MainActivity extends Activity {
 	private void searchItem() {
 		final EditText input = new EditText(this);
 
-		new AlertDialog.Builder(this).setTitle("Add IP")
+		new AlertDialog.Builder(this).setTitle("Search item")
 				.setView(input)
 				.setPositiveButton(android.R.string.ok, new OnClickListener() {
 

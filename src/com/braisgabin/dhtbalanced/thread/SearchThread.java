@@ -27,6 +27,12 @@ public class SearchThread implements Runnable {
 
 	public void run() {
 		try {
+			String string = ((App) App.getLastInstance()).getData().get(key);
+			if (string != null) {
+				((App) App.getLastInstance()).getLog().add("Finded here dht[" + key + "] = " + string);
+				return;
+			}
+
 			MyArrayList<String> fingerTable = ((App) App.getLastInstance()).getFingerTable();
 
 			String ip = Util.nextStep(fingerTable, myId, hash);
@@ -50,13 +56,9 @@ public class SearchThread implements Runnable {
 
 	public String find(int id, String ip, String key) throws Exception {
 		if (ip.equals(myIp)) {
-			return myIp;
+			return "--";
 		}
-		final int requestId = Util.getId(ip);
-		if (requestId == id) {
-			return ip;
-		}
-		((App) App.getLastInstance()).getLog().add("> " + ip + ": lookup " + id);
+		((App) App.getLastInstance()).getLog().add("> " + ip + ": find " + id + " " + key);
 		final Socket socket = new Socket(InetAddress.getByName(ip), 7777);
 		final PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())), true);
 		final BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));

@@ -44,6 +44,9 @@ public class ServerThread extends Thread {
 							String adress = getAdress(Integer.parseInt(split[1]), remoteIp);
 							out.println(adress);
 						} else if (line.startsWith("find")) {
+							String[] split = line.split(" ");
+							String adress = find(Integer.parseInt(split[1]), split[2], remoteIp);
+							out.println(adress);
 							// TODO implementar. Buscar si lo tienes tu. Si no lo tienes mirar si eras el responsable (lo eres si tu siguiente no puede serlo)
 							// en tal caso devolver -- si no devolver el mejor salto para llegar.
 						} else if (line.startsWith("add")) {
@@ -61,6 +64,29 @@ public class ServerThread extends Thread {
 			e.printStackTrace();
 			((App) App.getLastInstance()).getLog().add(e.getMessage());
 		}
+	}
+
+	private String find(int id, String key, String remoteIp) {
+		String value = ((App) App.getLastInstance()).getData().get(key);
+		if (value != null) {
+			value = "+" + value;
+		} else {
+			int remoteId = Util.getId(remoteIp);
+			if (remoteId < myId) {
+				if (id <= myId) {
+					value = "--";
+				} else {
+					value = Util.nextStep(((App) App.getLastInstance()).getFingerTable(), myId, id);
+				}
+			} else {
+				if (id <= myId || id > remoteId) {
+					value = "--";
+				} else {
+					value = Util.nextStep(((App) App.getLastInstance()).getFingerTable(), myId, id);
+				}
+			}
+		}
+		return value;
 	}
 
 	private String getAdress(int lookupId, String remoteIp) {
